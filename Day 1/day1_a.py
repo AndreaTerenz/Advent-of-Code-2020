@@ -1,20 +1,28 @@
-import bisect
+def main():
+    numbers = []
 
-numbers = []
+    #read the list from the input file
+    with open("Day 1/input.txt", "r") as f:
+        numbers = [int(l) for l in f]
 
-with open("Day 1/input.txt", "r") as f:
-    numbers = [int(l) for l in f]
+    #for each number in the list, excluding the last one
+    #(because it would have already been tested previously)
+    for i in range(0, len(numbers)-1):
+        n = numbers[i]
+        target = 2020 - n
 
-numbers.sort()
+        j = -1
+        try:
+            #use the index() function to find the target value
+            j = numbers[i+1:].index(target)
+        except ValueError:
+            pass
+        else:
+            #if no exception has been raised, the value has been found
+            return (n * target)
 
-for count in range(0, len(numbers)-1):
-    n1 = numbers[count]
-    target = 2020 - n1
+    return 0
 
-    i = -1
-    try:
-        i = numbers[count+1:].index(target)
-    except ValueError:
-        pass
-    else:
-         print(n1 * target)
+if __name__ == '__main__':
+    print(main())
+    
