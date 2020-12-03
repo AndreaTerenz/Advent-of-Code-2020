@@ -31,7 +31,7 @@ fun partB() : Int {
         val letter = tokens[2][0]
         val password = tokens[3]
 
-        //the only particular thing is the use of kotlin's infix xor function
+        //the only thing worth noting is the use of kotlin's infix xor function
         //and it is used because it matches exactly the meaning of the second puzzle
         //(one but neither both nor none)
         output += if ((password[pos1] == letter) xor (password[pos2] == letter)) 1 else 0
