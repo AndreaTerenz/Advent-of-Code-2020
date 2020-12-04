@@ -1,9 +1,11 @@
 ## Day 2 solution
 
 ### Language used
+
 Kotlin
 
 ### Prompt
+
 <https://adventofcode.com/2020/day/2>
 
 You are given a list of records in the form:
