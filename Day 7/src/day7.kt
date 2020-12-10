@@ -1,34 +1,33 @@
 import java.io.File
 
-class Link(linkStr : String) {
-    private val str = linkStr
-    val color : String
-        get() = this.str.split(Regex("\\d "))[1]
-    val amount : String
-        get() = this.str.split(Regex(" \\w"))[0]
-
-    override fun equals(other: Any?): Boolean { return other is Link && this.color == other.color && this.amount == other.amount }
-    override fun toString(): String { return "$amount $color" }
-    override fun hashCode(): Int { return 31 * color.hashCode() + amount.hashCode() }
+fun linkColorFromStr(str : String) : String {
+    return str.split(Regex("\\d ")).filter{ it.isNotBlank() }[0]
 }
 
-fun partA() : Int {
+fun linkWeightFromStr(str : String) : Int {
+    return str.split(Regex(" \\w"))[0].toInt()
+}
 
-    val nodes = mutableMapOf<String, MutableList<Link>>()
+fun readGraph() : Map<String, List<String>> {
+    val output = mutableMapOf<String, List<String>>()
 
     File("input.txt").forEachLine { l ->
         val line = l.replace(Regex(" (bags|bag)\\.$"), "").split(" bags contain ")
         val color = line[0]
         val content = line[1].split(Regex(" (bags|bag), ")).filter { x -> x != "no other" }
 
-        if (content.isNotEmpty()) nodes[color] = content.map{ Link(it) }.toMutableList()
+        if (content.isNotEmpty()) output[color] = content
     }
 
+    return output.toMap()
+}
+
+fun partA(graph : Map<String, List<String>>) : Int {
     val useful = mutableSetOf("shiny gold")
 
-    fun searchGold(node: String): Boolean {
-        nodes[node]?.forEach { link ->
-            if (useful.contains(link.color) || searchGold(link.color)) {
+    fun search(node: String): Boolean {
+        graph[node]?.map{ link -> linkColorFromStr(link) }?.forEach { color ->
+            if (useful.contains(color) || search(color)) {
                 useful.add(node)
                 return true
             }
@@ -37,9 +36,23 @@ fun partA() : Int {
         return false
     }
 
-    return nodes.filter { n -> n.key != "shiny gold" && searchGold(n.key) }.size
+    return graph.filter { n -> n.key != "shiny gold" && search(n.key) }.size
+}
+
+fun partB(graph : Map<String, List<String>>) : Int {
+    fun foo(node : String) : Int {
+        var tot = 1
+
+        if (graph[node] != null) graph[node]?.forEach { link -> tot += foo(linkColorFromStr(link)) * linkWeightFromStr(link) }
+
+        return tot
+    }
+
+    return foo("shiny gold")-1 //minus one because the shiny gold bag itself doesn't count
 }
 
 fun main() {
-    println(partA())
+    val graph = readGraph()
+    println(partA(graph))
+    println(partB(graph))
 }
